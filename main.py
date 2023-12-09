@@ -19,8 +19,11 @@ def adjusted_detect_face(img):
 											minNeighbors = 5)
 	
 	for (x, y, w, h) in face_rect:
-		cv2.rectangle(face_img, (x, y), 
-					(x + w, y + h), (255, 255, 255), 10)\
+		cv2.rectangle(face_img,
+				(x, y),
+				(x + w, y + h),
+				color=(0,255,0),
+				thickness=1)
 		
 	return face_img
 
@@ -32,8 +35,11 @@ def detect_eyes(img):
 											scaleFactor = 1.2, 
 											minNeighbors = 5) 
 	for (x, y, w, h) in eye_rect:
-		cv2.rectangle(eye_img, (x, y), 
-					(x + w, y + h), (255, 255, 255), 10)	 
+		cv2.rectangle(eye_img,
+				(x, y),
+				(x + w, y + h),
+				color= (255, 255, 255),
+				thickness=1)	 
 	return eye_img
 
 
@@ -48,9 +54,10 @@ while(True):
 	
     # Detecting the face 
     face = adjusted_detect_face(frame)
+    face_eyes = detect_eyes(face)
 
 	# Display the resulting frame 
-    cv2.imshow('face frame', adjusted_detect_face(frame)) 
+    cv2.imshow('face frame', face_eyes) 
 	
 	# the 'q' button is set as the 
 	# quitting button you may use any 
