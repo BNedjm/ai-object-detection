@@ -6,9 +6,9 @@ import numpy as np
 
 
 # Load a MiDas model for depth estimation
-model_type = "DPT_Large"     # MiDaS v3 - Large     (highest accuracy, slowest inference speed)
-#model_type = "DPT_Hybrid"   # MiDaS v3 - Hybrid    (medium accuracy, medium inference speed)
-#model_type = "MiDaS_small"  # MiDaS v2.1 - Small   (lowest accuracy, highest inference speed)
+# model_type = "DPT_Large"     # MiDaS v3 - Large     (highest accuracy, slowest inference speed)
+# model_type = "DPT_Hybrid"   # MiDaS v3 - Hybrid    (medium accuracy, medium inference speed)
+model_type = "MiDaS_small"  # MiDaS v2.1 - Small   (lowest accuracy, highest inference speed)
 
 midas = torch.hub.load("intel-isl/MiDaS", model_type)
 
@@ -27,7 +27,7 @@ else:
 
 
 # Open up the video capture from a webcam
-cap = cv2.VideoCapture(2)
+cap = cv2.VideoCapture(0)
 
 while cap.isOpened():
 
@@ -65,10 +65,13 @@ while cap.isOpened():
 
     depth_map = (depth_map*255).astype(np.uint8)
     depth_map = cv2.applyColorMap(depth_map , cv2.COLORMAP_MAGMA)
+    type(depth_map)
+    print(depth_map)
 
     cv2.putText(img, f'FPS: {int(fps)}', (20,70), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (0,255,0), 2)
-    cv2.imshow('Image', img)
+    # cv2.imshow('Image', img)
     cv2.imshow('Depth Map', depth_map)
+    # time.sleep(5)
 
     if cv2.waitKey(5) & 0xFF == 27:
         break
