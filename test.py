@@ -1,21 +1,40 @@
-import numpy as np
-import matplotlib.pyplot as plt
+import cv2
+import socket
+import pickle
+import struct
 
-# Example depth map (replace this with your actual depth map)
-depth_map = np.random.rand(10, 10)
+# Set up the socket
+client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+host_ip = "169.254.27.234"
+port = 9999
+socket_address = (host_ip, port)
 
-# Example camera parameters (replace these with your actual camera parameters)
-focal_length = 1000  # in pixels
-principal_point = (5, 5)  # (x, y) in pixels
+# Connect to the server
+client_socket.connect(socket_address)
+data = b""
+payload_size = struct.calcsize("Q")
 
-# Generate 2D reconstruction
-y, x = np.indices(depth_map.shape)
+while True:
+    while len(data) < payload_size:
+        packet = client_socket.recv(4 * 1024)
+        if not packet:
+            break
+        data += packet
 
-# Perspective projection
-world_coordinates = np.stack([x, y, np.ones_like(depth_map)], axis=-1)
-image_coordinates = world_coordinates[:, :, :2] * depth_map[:, :, np.newaxis] / focal_length + principal_point
+    packed_msg_size = data[:payload_size]
+    data = data[payload_size:]
+    msg_size = struct.unpack("Q", packed_msg_size)[0]
 
-# Display the 2D reconstruction
-plt.scatter(image_coordinates[:, :, 0], image_coordinates[:, :, 1], c=depth_map, cmap='viridis')
-plt.colorbar()
-plt.show()
+    while len(data) < msg_size:
+        data += client_socket.recv(4 * 1024)
+
+    frame_data = data[:msg_size]
+    data = data[msg_size:]
+    frame = pickle.loads(frame_data)
+    cv2.imshow("Received Video", frame)
+
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
+
+client_socket.close()
+cv2.destroyAllWindows()
