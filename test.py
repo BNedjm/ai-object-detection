@@ -54,13 +54,8 @@ class TurtleControllerNode(Node):
 
     def pose_callback(self, pose: Pose):
         cmd = Twist()
-        if pose.x > 9.0 or pose.x < 2.0 or pose.y > 9.0 or pose.y < 2.0:
-            cmd.linear.x = 1.0
-            cmd.angular.z = 0.9
-        else:
-            cmd.linear.x = 5.0
-            cmd.angular.z = 0.0
-
+        cmd.linear.x = 0.0
+        cmd.angular.z = 0.0
         self.cmd_vel_pub_.publish(cmd)
 
     def detector_controller(self, aruco_type):
@@ -116,9 +111,13 @@ class TurtleControllerNode(Node):
             
         self.cmd_vel_pub_.publish(cmd)
 
+
+aruco_type = "DICT_5X5_100"
+
 def main(args=None):
     rclpy.init(args=args)
     node = TurtleControllerNode()
+    node.detector_controller(aruco_type)
     rclpy.spin(node)
     rclpy.shutdown()
 
